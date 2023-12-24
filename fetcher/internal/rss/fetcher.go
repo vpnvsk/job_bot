@@ -1,7 +1,9 @@
-package source
+package rss
 
 import (
 	"context"
+	"encoding/json"
+	"fetcher/models"
 	"fmt"
 	"time"
 )
@@ -34,6 +36,7 @@ func (f Fetch) Start(ctx context.Context) error {
 
 		case <-ticker.C:
 			if err := f.Fetch(ctx); err != nil {
+				fmt.Println(err)
 				return err
 			}
 		}
@@ -45,6 +48,17 @@ func (f Fetch) Fetch(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(items)
+	result, err := f.serializeToJSON(items)
+	fmt.Println(string(result))
+	//fmt.Println(items)
 	return err
+}
+
+func (f Fetch) serializeToJSON(items []models.Item) ([]byte, error) {
+	// Serialize the slice to JSON
+	jsonData, err := json.Marshal(items)
+	if err != nil {
+		return nil, err
+	}
+	return jsonData, nil
 }

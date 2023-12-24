@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	source "fetcher/internal/source"
+	source "fetcher/internal/rss"
 	"log"
 	"os"
 	"os/signal"
@@ -12,10 +12,11 @@ import (
 )
 
 func main() {
-	sources := []string{"https://pl.indeed.com/rss?q=golang&amp;l=Polska",
-		"https://pl.indeed.com/rss?q=python&amp;l=Polska"}
+	sources := []string{"https://jobs.dou.ua/vacancies/feeds/?exp=1-3&category=Golang",
+		"https://jobs.dou.ua/vacancies/feeds/?exp=1-3&category=Python"}
+
 	sour := source.NewSource(sources)
-	fet := source.New(1000*time.Hour, sour)
+	fet := source.New(1*time.Minute, sour)
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
@@ -61,23 +62,23 @@ func main() {
 //
 //	var wg sync.WaitGroup
 //
-//	for _, source := range sources {
+//	for _, rss := range sources {
 //		wg.Add(1)
 //
-//		go func(source string) {
+//		go func(rss string) {
 //			defer wg.Done()
 //
-//			err := RFetch(ctx, source)
+//			err := RFetch(ctx, rss)
 //			if err != nil {
-//				log.Printf("[ERROR] failed to fetch items from source %q", err)
+//				log.Printf("[ERROR] failed to fetch items from rss %q", err)
 //				return
 //			}
 //
-//			//if err := f.processItems(ctx, source, items); err != nil {
-//			//	log.Printf("[ERROR] failed to process items from source %q: %v", source.Name(), err)
+//			//if err := f.processItems(ctx, rss, items); err != nil {
+//			//	log.Printf("[ERROR] failed to process items from rss %q: %v", rss.Name(), err)
 //			//	return
 //			//}
-//		}(source)
+//		}(rss)
 //	}
 //
 //	wg.Wait()
